@@ -1,6 +1,6 @@
 [package]
 name = "wolfssl-sys"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["pete.m@expressvpn.com"]
 license = "GPL-2.0"
@@ -8,6 +8,7 @@ readme = "README.md"
 description = "System bindings for WolfSSL"
 repository = "https://github.com/expressvpn/wolfssl-sys"
 keywords = ["wolfssl", "vpn", "expressvpn", "lightway"]
+links = "wolfssl"
 
 [build-dependencies]
 bindgen = "0.59.2"
