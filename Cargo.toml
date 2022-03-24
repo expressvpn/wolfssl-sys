@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2021"
 authors = ["pete.m@expressvpn.com"]
 license = "GPL-2.0"
-license-file = "LICENSE"
 readme = "README.md"
 description = "System bindings for WolfSSL"
 repository = "https://github.com/expressvpn/wolfssl-sys"
