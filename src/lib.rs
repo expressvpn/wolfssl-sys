@@ -4,6 +4,10 @@
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 
+// To work around an issue in bindgen (#1651)
+#![allow(deref_nullptr)]
+
+
 // Pull in the bindings file created during the initial build
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 
