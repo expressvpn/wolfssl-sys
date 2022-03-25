@@ -104,6 +104,7 @@ fn main() -> std::io::Result<()> {
         .clang_arg(format!("-I{}/include/", dst_string))
         .parse_callbacks(Box::new(ignored_macros))
         .rustfmt_bindings(true)
+        .blocklist_file("/usr/include/stdlib.h")
         .generate()
         .expect("Unable to generate bindings");
 
