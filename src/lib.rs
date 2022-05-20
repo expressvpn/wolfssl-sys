@@ -22,11 +22,8 @@ mod tests {
     fn init_wolfssl() {
         unsafe {
             let res = wolfSSL_Init();
-            println!("Res: {:?}", res);
+            assert_eq!(res, WOLFSSL_SUCCESS);
 
-            if res == WOLFSSL_SUCCESS {
-                println!("OK!");
-            }
         }
     }
 }
