@@ -32,7 +32,7 @@ impl bindgen::callbacks::ParseCallbacks for IgnoreMacros {
 fn extract_wolfssl(dest: &str) -> std::io::Result<()> {
     Command::new("tar")
         .arg("-zxvf")
-        .arg("vendor/wolfssl-5.2.0-stable.tar.gz")
+        .arg("vendor/wolfssl-5.3.0-stable.tar.gz")
         .arg("-C")
         .arg(dest)
         .status()
@@ -55,7 +55,7 @@ fn build_wolfssl(dest: &str) -> PathBuf {
         // Disable old TLS versions
         .disable("oldtls", None)
         // Enable AES hardware acceleration
-        .enable("aesni", None)
+        //.enable("aesni", None)
         // Enable single threaded mode
         .enable("singlethreaded", None)
         // Enable D/TLS
@@ -69,13 +69,16 @@ fn build_wolfssl(dest: &str) -> PathBuf {
         // Disable SHA3
         .disable("sha3", None)
         // Enable Intel ASM optmisations
-        .enable("intelasm", None)
+        //.enable("intelasm", None)
         // Disable DH key exchanges
         .disable("dh", None)
         // Enable elliptic curve exchanges
         .enable("curve25519", None)
         // Enable Secure Renegotiation
         .enable("secure-renegotiation", None)
+	// ARM ASM
+//	.enable("armasm", None)
+	
         // CFLAGS
         .cflag("-g")
         .cflag("-fPIC")
