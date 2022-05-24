@@ -3,10 +3,8 @@
 #![allow(non_upper_case_globals)]
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
-
 // To work around an issue in bindgen (#1651)
 #![allow(deref_nullptr)]
-
 
 // Pull in the bindings file created during the initial build
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
@@ -22,11 +20,7 @@ mod tests {
     fn init_wolfssl() {
         unsafe {
             let res = wolfSSL_Init();
-            println!("Res: {:?}", res);
-
-            if res == WOLFSSL_SUCCESS {
-                println!("OK!");
-            }
+            assert_eq!(res, WOLFSSL_SUCCESS);
         }
     }
 }
