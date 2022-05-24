@@ -10,6 +10,8 @@ use std::env;
 use std::path::PathBuf;
 use std::process::Command;
 
+static WOLFSSL_VERSION: &str = "wolfssl-5.3.0-stable";
+
 /**
  * Work around for bindgen creating duplicate values.
  */
@@ -32,7 +34,7 @@ impl bindgen::callbacks::ParseCallbacks for IgnoreMacros {
 fn extract_wolfssl(dest: &str) -> std::io::Result<()> {
     Command::new("tar")
         .arg("-zxvf")
-        .arg("vendor/wolfssl-5.3.0-stable.tar.gz")
+        .arg(format!("vendor/{}.tar.gz", WOLFSSL_VERSION))
         .arg("-C")
         .arg(dest)
         .status()
@@ -45,7 +47,7 @@ fn extract_wolfssl(dest: &str) -> std::io::Result<()> {
 Builds WolfSSL
 */
 fn build_wolfssl(dest: &str) -> PathBuf {
-    Config::new(format!("{}/wolfssl-5.2.0-stable", dest))
+    Config::new(format!("{}/{}", dest, WOLFSSL_VERSION))
         .reconf("-ivf")
         // Only build the static library
         .enable_static()
@@ -55,7 +57,7 @@ fn build_wolfssl(dest: &str) -> PathBuf {
         // Disable old TLS versions
         .disable("oldtls", None)
         // Enable AES hardware acceleration
-        //.enable("aesni", None)
+        .enable("aesni", None)
         // Enable single threaded mode
         .enable("singlethreaded", None)
         // Enable D/TLS
@@ -69,7 +71,7 @@ fn build_wolfssl(dest: &str) -> PathBuf {
         // Disable SHA3
         .disable("sha3", None)
         // Enable Intel ASM optmisations
-        //.enable("intelasm", None)
+        .enable("intelasm", None)
         // Disable DH key exchanges
         .disable("dh", None)
         // Enable elliptic curve exchanges
@@ -77,7 +79,7 @@ fn build_wolfssl(dest: &str) -> PathBuf {
         // Enable Secure Renegotiation
         .enable("secure-renegotiation", None)
 	// ARM ASM
-//	.enable("armasm", None)
+	//.enable("armasm", None)
 	
         // CFLAGS
         .cflag("-g")
