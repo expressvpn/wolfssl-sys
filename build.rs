@@ -47,8 +47,10 @@ fn extract_wolfssl(dest: &str) -> std::io::Result<()> {
 Builds WolfSSL
 */
 fn build_wolfssl(dest: &str) -> PathBuf {
-    Config::new(format!("{}/{}", dest, WOLFSSL_VERSION))
-        .reconf("-ivf")
+    // Create the config
+    let mut conf = Config::new(format!("{}/{}", dest, WOLFSSL_VERSION));
+    // Configure it
+    conf.reconf("-ivf")
         // Only build the static library
         .enable_static()
         .disable_shared()
@@ -56,8 +58,6 @@ fn build_wolfssl(dest: &str) -> PathBuf {
         .enable("tls13", None)
         // Disable old TLS versions
         .disable("oldtls", None)
-        // Enable AES hardware acceleration
-        .enable("aesni", None)
         // Enable single threaded mode
         .enable("singlethreaded", None)
         // Enable D/TLS
@@ -70,25 +70,33 @@ fn build_wolfssl(dest: &str) -> PathBuf {
         .enable("dtls-mtu", None)
         // Disable SHA3
         .disable("sha3", None)
-        // Enable Intel ASM optmisations
-        .enable("intelasm", None)
         // Disable DH key exchanges
         .disable("dh", None)
         // Enable elliptic curve exchanges
         .enable("curve25519", None)
         // Enable Secure Renegotiation
         .enable("secure-renegotiation", None)
-	// ARM ASM
-	//.enable("armasm", None)
-	
         // CFLAGS
         .cflag("-g")
         .cflag("-fPIC")
         .cflag("-DWOLFSSL_DTLS_ALLOW_FUTURE")
         .cflag("-DWOLFSSL_MIN_RSA_BITS=2048")
-        .cflag("-DWOLFSSL_MIN_ECC_BITS=256")
-        // Build it
-        .build()
+        .cflag("-DWOLFSSL_MIN_ECC_BITS=256");
+
+    if build_target::target_arch().unwrap() == build_target::Arch::X86_64 {
+        // Enable Intel ASM optmisations
+        conf.enable("intelasm", None);
+        // Enable AES hardware acceleration
+        conf.enable("aesni", None);
+    }
+
+    if build_target::target_arch().unwrap() == build_target::Arch::AARCH64 {
+        // Enable ARM ASM optimisations
+        conf.enable("armasm", None);
+    }
+
+    // Build and return the config
+    conf.build()
 }
 
 fn main() -> std::io::Result<()> {
