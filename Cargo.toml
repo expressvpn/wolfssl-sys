@@ -11,6 +11,6 @@ keywords = ["wolfssl", "vpn", "expressvpn", "lightway"]
 links = "wolfssl"
 
 [build-dependencies]
-bindgen = "0.59.2"
+bindgen = "0.60.1"
 autotools = "0.2"
 build-target = "0.4.0"
