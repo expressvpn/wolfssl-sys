@@ -1,6 +1,6 @@
 [package]
 name = "wolfssl-sys"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 authors = ["pete.m@expressvpn.com"]
 license = "GPL-2.0"
@@ -11,6 +11,6 @@ keywords = ["wolfssl", "vpn", "expressvpn", "lightway"]
 links = "wolfssl"
 
 [build-dependencies]
-bindgen = "0.59.2"
+bindgen = "0.60.1"
 autotools = "0.2"
 build-target = "0.4.0"

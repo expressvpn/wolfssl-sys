@@ -14,9 +14,9 @@ Add `wolfssl-sys` to your Cargo manifest:
 
 ```
 [dependencies]
-wolfssl-sys = "0.1.0"
+wolfssl-sys = "0.1.5"
 ```
-To ensure that the crate can be built even offline, the crate includes the source code for WolfSSL (currently version `5.2.0`). WolfSSL uses autotools to build and configure the library so this will need to be install on the build system.
+To ensure that the crate can be built even offline, the crate includes the source code for WolfSSL (currently version `5.4.0`). WolfSSL uses autotools to build and configure the library so this will need to be install on the build system.
 
 ## Building with Earthly
 There is also an `Earthfile` provided so that you can build the crate in [Earthly](https://earthly.dev):

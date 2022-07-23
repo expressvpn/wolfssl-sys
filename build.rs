@@ -10,7 +10,7 @@ use std::env;
 use std::path::PathBuf;
 use std::process::Command;
 
-static WOLFSSL_VERSION: &str = "wolfssl-5.3.0-stable";
+static WOLFSSL_VERSION: &str = "wolfssl-5.4.0-stable";
 
 /**
  * Work around for bindgen creating duplicate values.
@@ -91,6 +91,11 @@ fn build_wolfssl(dest: &str) -> PathBuf {
     }
 
     if build_target::target_arch().unwrap() == build_target::Arch::AARCH64 {
+        // Enable ARM ASM optimisations
+        conf.enable("armasm", None);
+    }
+
+    if build_target::target_arch().unwrap() == build_target::Arch::ARM {
         // Enable ARM ASM optimisations
         conf.enable("armasm", None);
     }
