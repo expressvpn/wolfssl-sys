@@ -10,7 +10,7 @@ use std::env;
 use std::path::PathBuf;
 use std::process::Command;
 
-static WOLFSSL_VERSION: &str = "wolfssl-5.3.0-stable";
+static WOLFSSL_VERSION: &str = "wolfssl-5.4.0-stable";
 
 /**
  * Work around for bindgen creating duplicate values.
