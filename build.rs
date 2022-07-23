@@ -95,6 +95,11 @@ fn build_wolfssl(dest: &str) -> PathBuf {
         conf.enable("armasm", None);
     }
 
+    if build_target::target_arch().unwrap() == build_target::Arch::ARM {
+        // Enable ARM ASM optimisations
+        conf.enable("armasm", None);
+    }
+
     // Build and return the config
     conf.build()
 }
