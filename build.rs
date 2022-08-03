@@ -83,6 +83,18 @@ fn build_wolfssl(dest: &str) -> PathBuf {
         .cflag("-DWOLFSSL_MIN_RSA_BITS=2048")
         .cflag("-DWOLFSSL_MIN_ECC_BITS=256");
 
+    if cfg!(feature = "postquantum") {
+        // Post Quantum support is provided by liboqs
+        if let Some(include) = std::env::var_os("DEP_OQS_ROOT") {
+            let oqs_path = &include.into_string().unwrap();
+            conf.cflag(format!("-I{}/build/include/", oqs_path));
+            conf.ldflag(format!("-L{}/build/lib/", oqs_path));
+            conf.with("liboqs", None);
+        } else {
+            panic!("Post Quantum requested but liboqs appears to be missing?");
+        }
+    }
+
     if build_target::target_arch().unwrap() == build_target::Arch::X86_64 {
         // Enable Intel ASM optmisations
         conf.enable("intelasm", None);
@@ -110,11 +122,30 @@ fn main() -> std::io::Result<()> {
 
     // Extract WolfSSL
     extract_wolfssl(&dst_string)?;
+
     // Configure and build WolfSSL
     let dst = build_wolfssl(&dst_string);
 
     // We want to block some macros as they are incorrectly creating duplicate values
-    let ignored_macros = IgnoreMacros(vec!["IPPORT_RESERVED".into()].into_iter().collect());
+    // https://github.com/rust-lang/rust-bindgen/issues/687
+    // TODO: Reach out to tlspuffin and ask if we can incorporate this code and credit them
+    let mut hash_ignored_macros = HashSet::new();
+    for i in &[
+        "IPPORT_RESERVED",
+        "EVP_PKEY_DH",
+        "BIO_CLOSE",
+        "BIO_NOCLOSE",
+        "CRYPTO_LOCK",
+        "ASN1_STRFLGS_ESC_MSB",
+        "SSL_MODE_RELEASE_BUFFERS",
+        // Woflss 4.3.0
+        "GEN_IPADD",
+        "EVP_PKEY_RSA",
+    ] {
+        hash_ignored_macros.insert(i.to_string());
+    }
+
+    let ignored_macros = IgnoreMacros(hash_ignored_macros);
 
     // Build the Rust binding
     let bindings = bindgen::Builder::default()
@@ -133,10 +164,13 @@ fn main() -> std::io::Result<()> {
 
     // Tell cargo to tell rustc to link in WolfSSL
     println!("cargo:rustc-link-lib=static=wolfssl");
-    println!(
-        "cargo:rustc-link-search=native={}",
-        format!("{}/lib/", dst_string)
-    );
+
+    if cfg!(feature = "postquantum") {
+        println!("cargo:rustc-link-lib=static=oqs");
+    }
+
+    println!("cargo:rustc-link-search=native={}/lib/", dst_string);
+
     println!("cargo:include={}", dst_string);
 
     // Invalidate the built crate whenever the wrapper changes

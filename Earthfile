@@ -5,7 +5,7 @@ WORKDIR /wolfssl-sys
 
 build-deps:
     RUN apt-get update -qqy
-    RUN apt-get install -qqy autoconf autotools-dev libtool-bin clang
+    RUN apt-get install -qqy autoconf autotools-dev libtool-bin clang cmake
 
 copy-src:
     FROM +build-deps
@@ -16,12 +16,12 @@ copy-src:
 build-dev:
     FROM +copy-src
     RUN cargo build
-    SAVE ARTIFACT target/debug /release/ AS LOCAL artifacts/debug/
+    SAVE ARTIFACT target/debug /debug AS LOCAL artifacts/debug
 
 build-release:
     FROM +copy-src
     RUN cargo build --release
-    SAVE ARTIFACT target/release /release/ AS LOCAL artifacts/release/
+    SAVE ARTIFACT target/release /release AS LOCAL artifacts/release
 
 run-tests:
     FROM +copy-src
