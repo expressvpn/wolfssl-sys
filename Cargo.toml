@@ -1,16 +1,29 @@
 [package]
 name = "wolfssl-sys"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
 authors = ["pete.m@expressvpn.com"]
 license = "GPL-2.0"
 readme = "README.md"
 description = "System bindings for WolfSSL"
 repository = "https://github.com/expressvpn/wolfssl-sys"
-keywords = ["wolfssl", "vpn", "expressvpn", "lightway"]
+keywords = ["wolfssl", "vpn", "expressvpn", "lightway", "post-quantum", "cryptography"]
 links = "wolfssl"
 
 [build-dependencies]
 bindgen = "0.60.1"
 autotools = "0.2"
 build-target = "0.4.0"
+
+[dependencies]
+oqs-sys = { version = "0.7.1", default-features = false, features = ["kems", "sigs"], optional = true}
+
+[features]
+default = []
+postquantum = ["dep:oqs-sys"]
+
+
+[package.metadata.cargo-all-features]
+
+# Not an actual feature
+denylist = ["oqs-sys"]
