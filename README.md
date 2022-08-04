@@ -35,6 +35,10 @@ wolfssl-sys = { version = "0.1.6" features = ["postquantum"] }
 
 This will automatically build `liboqs` from the `oqs-sys` crate and link WolfSSL against it, making definitions such as `WOLFSSL_P521_KYBER_LEVEL5` available.
 
+## Contributors
+A number of people have taken the time to contribute towards this crate. From opening valuable issues, to contributing a line or two of code, we would like to give credit for their help here:
+
+
 ## TODO
 
 * Resolve the warnings in the auto generated tests
