@@ -73,9 +73,12 @@ fn build_wolfssl(dest: &str) -> PathBuf {
         // Disable DH key exchanges
         .disable("dh", None)
         // Enable elliptic curve exchanges
+        .enable("supportedcurves", None)
         .enable("curve25519", None)
         // Enable Secure Renegotiation
         .enable("secure-renegotiation", None)
+        // Enable SNI
+        .enable("sni", None)
         // CFLAGS
         .cflag("-g")
         .cflag("-fPIC")
