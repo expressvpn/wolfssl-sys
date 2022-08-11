@@ -14,9 +14,11 @@ Add `wolfssl-sys` to your Cargo manifest:
 
 ```
 [dependencies]
-wolfssl-sys = "0.1.6"
+wolfssl-sys = "0.1.7"
 ```
-To ensure that the crate can be built even offline, the crate includes the source code for WolfSSL (currently version `5.4.0`). WolfSSL uses autotools to build and configure the library so this will need to be install on the build system.
+To ensure that the crate can be built even offline, the crate includes the source code for WolfSSL (currently version `5.4.0`). WolfSSL uses autotools to build and configure the library so this will need to be installed on the build system.
+
+Note: This crate includes a patch from the WolfSSL master branch to improve reporting with Post Quantum curves. It has no other effect and as it is already merged into master, will be removed when WolfSSL cuts a new release.
 
 ## Building with Earthly
 There is also an `Earthfile` provided so that you can build the crate in [Earthly](https://earthly.dev):
@@ -30,10 +32,29 @@ WolfSSL offers Post Quantum support by leveraging `liboqs`, a library from the [
 
 ``` toml
 [dependencies]
-wolfssl-sys = { version = "0.1.6" features = ["postquantum"] }
+wolfssl-sys = { version = "0.1.7" features = ["postquantum"] }
 ```
 
 This will automatically build `liboqs` from the `oqs-sys` crate and link WolfSSL against it, making definitions such as `WOLFSSL_P521_KYBER_LEVEL5` available.
+
+### Testing it
+The crate includes an example called `connect_pq`. It is a *very* basic application that connects to the test site of the Open Quantum Safe project and tries to use the hybrid P521 and Kyber Level 5 key exchange mechanism. You can run this example with:
+
+``` shell
+cargo run --example connect_pq --features=postquantum
+```
+
+All being well you should get output like this:
+
+``` text
+Connected to  test.openquantumsafe.org
+Key Exchange: "P521_KYBER_LEVEL5"
+Cipher:       "TLS13-AES128-GCM-SHA256"
+```
+
+The example shows how easy it is to use WolfSSL's Post Quantum support, but it is certainly not production ready!
+
+
 
 ## Contributors
 A number of people have taken the time to contribute towards this crate. From opening valuable issues, to contributing a line or two of code, we would like to give credit for their help here:
