@@ -30,6 +30,7 @@ mod tests {
         unsafe {
             // Init WolfSSL
             let res = wolfSSL_Init();
+            assert_eq!(res, WOLFSSL_SUCCESS);
 
             // Set up client method
             let method = wolfTLSv1_3_client_method();
