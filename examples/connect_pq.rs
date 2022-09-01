@@ -27,7 +27,7 @@ fn main() {
         .as_c_str()
         .as_ptr() as *mut ::std::os::raw::c_void;
     // The port that runs P521 Kyber Level 5 hybrid
-    let port = 6051;
+    let port = 6043;
 
     // Compile in the OQS CA at build time
     let pq_osa_ca = include_bytes!("test_certs/pq-osa-ca.crt");
