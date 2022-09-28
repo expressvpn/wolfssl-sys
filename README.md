@@ -14,7 +14,7 @@ Add `wolfssl-sys` to your Cargo manifest:
 
 ```
 [dependencies]
-wolfssl-sys = "0.1.9"
+wolfssl-sys = "0.1.10"
 ```
 To ensure that the crate can be built even offline, the crate includes the source code for WolfSSL (currently version `5.4.0`). WolfSSL uses autotools to build and configure the library so this will need to be installed on the build system.
 
@@ -32,7 +32,7 @@ WolfSSL offers Post Quantum support by leveraging `liboqs`, a library from the [
 
 ``` toml
 [dependencies]
-wolfssl-sys = { version = "0.1.9" features = ["postquantum"] }
+wolfssl-sys = { version = "0.1.10" features = ["postquantum"] }
 ```
 
 This will automatically build `liboqs` from the `oqs-sys` crate and link WolfSSL against it, making definitions such as `WOLFSSL_P521_KYBER_LEVEL5` available.
