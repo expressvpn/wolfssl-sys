@@ -1,6 +1,6 @@
 [package]
 name = "wolfssl-sys"
-version = "0.1.12"
+version = "0.1.13"
 edition = "2021"
 authors = ["pete.m@expressvpn.com"]
 license = "GPL-2.0"
