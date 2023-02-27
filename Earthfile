@@ -12,6 +12,7 @@ copy-src:
     COPY Cargo.toml wrapper.h build.rs ./
     COPY --dir src ./
     COPY --dir vendor ./
+    COPY --dir examples ./
 
 build-dev:
     FROM +copy-src
