@@ -151,7 +151,7 @@ fn main() -> std::io::Result<()> {
     let ignored_macros = IgnoreMacros(hash_ignored_macros);
 
     // Build the Rust binding
-    let bindings = bindgen::Builder::default()
+    let bindings: bindgen::Bindings = bindgen::Builder::default()
         .header("wrapper.h")
         .clang_arg(format!("-I{}/include/", dst_string))
         .parse_callbacks(Box::new(ignored_macros))
@@ -159,6 +159,8 @@ fn main() -> std::io::Result<()> {
         .blocklist_file("/usr/include/stdlib.h")
         .generate()
         .expect("Unable to generate bindings");
+
+    bindings.emit_warnings();
 
     // Write out the bindings
     bindings
