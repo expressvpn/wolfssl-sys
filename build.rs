@@ -141,7 +141,7 @@ fn main() -> std::io::Result<()> {
         "CRYPTO_LOCK",
         "ASN1_STRFLGS_ESC_MSB",
         "SSL_MODE_RELEASE_BUFFERS",
-        // Woflss 4.3.0
+        // Wolfssl 4.3.0
         "GEN_IPADD",
         "EVP_PKEY_RSA",
     ] {
