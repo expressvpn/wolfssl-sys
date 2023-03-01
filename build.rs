@@ -151,12 +151,18 @@ fn main() -> std::io::Result<()> {
     let ignored_macros = IgnoreMacros(hash_ignored_macros);
 
     // Build the Rust binding
-    let bindings: bindgen::Bindings = bindgen::Builder::default()
+    let builder = bindgen::Builder::default()
         .header("wrapper.h")
         .clang_arg(format!("-I{dst_string}/include/"))
         .parse_callbacks(Box::new(ignored_macros))
-        .rustfmt_bindings(true)
-        .blocklist_file("/usr/include/stdlib.h")
+        .rustfmt_bindings(true);
+
+    let builder = builder
+        .allowlist_file(format!("{dst_string}/include/wolfssl/.*.h"))
+        .allowlist_file(format!("{dst_string}/include/wolfssl/wolfcrypt/.*.h"))
+        .allowlist_file(format!("{dst_string}/include/wolfssl/openssl/compat_types.h"));
+
+    let bindings: bindgen::Bindings = builder
         .generate()
         .expect("Unable to generate bindings");
 
