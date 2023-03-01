@@ -1,0 +1,23 @@
+on:
+  push:
+    branches: [main]
+  pull_request: null # target every PR
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: earthly/actions/setup-earthly@v1
+        with:
+          version: v0.6.30
+      - uses: actions/checkout@v2
+      - name: Run Tests
+        run: earthly --ci +run-tests
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: earthly/actions/setup-earthly@v1
+        with:
+          version: v0.6.30
+      - uses: actions/checkout@v2
+      - name: Build crate
+        run: earthly --ci +build-release
