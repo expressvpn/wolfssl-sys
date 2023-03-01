@@ -34,7 +34,7 @@ impl bindgen::callbacks::ParseCallbacks for IgnoreMacros {
 fn extract_wolfssl(dest: &str) -> std::io::Result<()> {
     Command::new("tar")
         .arg("-zxvf")
-        .arg(format!("vendor/{}.tar.gz", WOLFSSL_VERSION))
+        .arg(format!("vendor/{WOLFSSL_VERSION}.tar.gz"))
         .arg("-C")
         .arg(dest)
         .status()
@@ -48,7 +48,7 @@ Builds WolfSSL
 */
 fn build_wolfssl(dest: &str) -> PathBuf {
     // Create the config
-    let mut conf = Config::new(format!("{}/{}", dest, WOLFSSL_VERSION));
+    let mut conf = Config::new(format!("{dest}/{WOLFSSL_VERSION}"));
     // Configure it
     conf.reconf("-ivf")
         // Only build the static library
@@ -90,8 +90,8 @@ fn build_wolfssl(dest: &str) -> PathBuf {
         // Post Quantum support is provided by liboqs
         if let Some(include) = std::env::var_os("DEP_OQS_ROOT") {
             let oqs_path = &include.into_string().unwrap();
-            conf.cflag(format!("-I{}/build/include/", oqs_path));
-            conf.ldflag(format!("-L{}/build/lib/", oqs_path));
+            conf.cflag(format!("-I{oqs_path}/build/include/"));
+            conf.ldflag(format!("-L{oqs_path}/build/lib/"));
             conf.with("liboqs", None);
         } else {
             panic!("Post Quantum requested but liboqs appears to be missing?");
@@ -153,7 +153,7 @@ fn main() -> std::io::Result<()> {
     // Build the Rust binding
     let bindings: bindgen::Bindings = bindgen::Builder::default()
         .header("wrapper.h")
-        .clang_arg(format!("-I{}/include/", dst_string))
+        .clang_arg(format!("-I{dst_string}/include/"))
         .parse_callbacks(Box::new(ignored_macros))
         .rustfmt_bindings(true)
         .blocklist_file("/usr/include/stdlib.h")
