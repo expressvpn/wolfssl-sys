@@ -162,6 +162,8 @@ fn main() -> std::io::Result<()> {
         .allowlist_file(format!("{dst_string}/include/wolfssl/wolfcrypt/.*.h"))
         .allowlist_file(format!("{dst_string}/include/wolfssl/openssl/compat_types.h"));
 
+    let builder = builder.blocklist_function("wolfSSL_BIO_vprintf");
+
     let bindings: bindgen::Bindings = builder
         .generate()
         .expect("Unable to generate bindings");
