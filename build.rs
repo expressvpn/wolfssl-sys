@@ -149,18 +149,19 @@ fn main() -> std::io::Result<()> {
     }
 
     let ignored_macros = IgnoreMacros(hash_ignored_macros);
+    let dst_include = format!("{dst_string}/include");
 
     // Build the Rust binding
     let builder = bindgen::Builder::default()
         .header("wrapper.h")
-        .clang_arg(format!("-I{dst_string}/include/"))
+        .clang_arg(format!("-I{dst_include}/"))
         .parse_callbacks(Box::new(ignored_macros))
         .rustfmt_bindings(true);
 
     let builder = builder
-        .allowlist_file(format!("{dst_string}/include/wolfssl/.*.h"))
-        .allowlist_file(format!("{dst_string}/include/wolfssl/wolfcrypt/.*.h"))
-        .allowlist_file(format!("{dst_string}/include/wolfssl/openssl/compat_types.h"));
+        .allowlist_file(format!("{dst_include}/wolfssl/.*.h"))
+        .allowlist_file(format!("{dst_include}/wolfssl/wolfcrypt/.*.h"))
+        .allowlist_file(format!("{dst_include}/wolfssl/openssl/compat_types.h"));
 
     let builder = builder.blocklist_function("wolfSSL_BIO_vprintf");
 
