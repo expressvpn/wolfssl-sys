@@ -37,3 +37,8 @@ build-crate:
     FROM +copy-src
     RUN cargo package
     SAVE ARTIFACT target/package/*.crate /package/ AS LOCAL artifacts/crate/
+
+lint:
+    FROM +copy-src
+    RUN rustup component add clippy
+    RUN cargo clippy --all-features --all-targets -- -D warnings
