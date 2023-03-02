@@ -16,7 +16,7 @@ Add `wolfssl-sys` to your Cargo manifest:
 [dependencies]
 wolfssl-sys = "0.1.14"
 ```
-To ensure that the crate can be built even offline, the crate includes the source code for WolfSSL (currently version `5.5.4`). WolfSSL uses autotools to build and configure the library so this will need to be installed on the build system.
+To ensure that the crate can be built even offline, the crate includes the source code for WolfSSL (currently version `5.5.4`). WolfSSL uses autotools and automake to build and configure the library so this will need to be installed on the build system.
 
 Note: This crate includes a patch from the WolfSSL master branch to improve reporting with Post Quantum curves. It has no other effect and as it is already merged into master, will be removed when WolfSSL cuts a new release.
 
