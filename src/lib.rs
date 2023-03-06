@@ -1,5 +1,7 @@
 mod raw_bindings;
+mod ssl;
 pub use raw_bindings::*;
+pub use ssl::{InitError, init, CleanupError, cleanup};
 
 
 /**
