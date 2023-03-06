@@ -62,6 +62,8 @@ fn build_wolfssl(dest: &str) -> PathBuf {
         .enable("singlethreaded", None)
         // Enable D/TLS
         .enable("dtls", None)
+        // Enable D/TLS/1.3
+        .enable("dtls13", None)
         // Enable single precision
         .enable("sp", None)
         // Enable single precision ASM
