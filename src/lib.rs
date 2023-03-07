@@ -1,8 +1,7 @@
 mod raw_bindings;
 mod ssl;
 pub use raw_bindings::*;
-pub use ssl::{InitError, init, CleanupError, cleanup};
-
+pub use ssl::{InitError, init, CleanupError, cleanup, WolfSslMethod};
 
 /**
  * Add more tests to gain more confidence in the bindings
