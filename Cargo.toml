@@ -30,3 +30,6 @@ denylist = ["oqs-sys"]
 [[example]]
 name = "connect_pq"
 required-features = ["postquantum"]
+
+[dev-dependencies]
+test-case = "3.0.0"
