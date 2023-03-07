@@ -7,7 +7,8 @@ use super::raw_bindings::{
     wolfTLSv1_3_client_method, wolfTLSv1_3_server_method,
 };
 use super::raw_bindings::{wolfSSL_CTX_free, wolfSSL_CTX_new};
-use super::raw_bindings::{WOLFSSL_CTX, WOLFSSL_METHOD};
+use super::raw_bindings::{wolfSSL_free, wolfSSL_new};
+use super::raw_bindings::{WOLFSSL_CTX, WOLFSSL_METHOD, WOLFSSL};
 
 
 /// Return error values for [`init`]
@@ -110,11 +111,29 @@ impl WolfSslContext {
             None
         }
     }
+
+    #[allow(dead_code)]
+    pub fn create_session(&self) -> Option<WolfSslSession> {
+        let ptr = unsafe { wolfSSL_new(self.0) };
+        if !ptr.is_null() {
+            Some(WolfSslSession(ptr))
+        } else {
+            None
+        }
+    }
 }
 
 impl Drop for WolfSslContext {
     fn drop(&mut self) {
         unsafe { wolfSSL_CTX_free(self.0) }
+    }
+}
+
+pub struct WolfSslSession(*mut WOLFSSL);
+
+impl Drop for WolfSslSession {
+    fn drop(&mut self) {
+        unsafe { wolfSSL_free(self.0) }
     }
 }
 
@@ -128,6 +147,12 @@ mod tests {
     fn init_cleanup() {
         init().unwrap();
         cleanup().unwrap();
+    }
+
+    #[test]
+    fn context_create_session() {
+        let ctx = WolfSslContext::new(WolfSslMethod::DtlsClient).unwrap();
+        ctx.create_session().unwrap();
     }
 
     #[test_case(WolfSslMethod::DtlsClient)]
