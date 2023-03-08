@@ -165,9 +165,7 @@ fn main() -> std::io::Result<()> {
 
     let builder = builder.blocklist_function("wolfSSL_BIO_vprintf");
 
-    let bindings: bindgen::Bindings = builder
-        .generate()
-        .expect("Unable to generate bindings");
+    let bindings: bindgen::Bindings = builder.generate().expect("Unable to generate bindings");
 
     bindings.emit_warnings();
 
