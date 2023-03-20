@@ -156,6 +156,21 @@ impl WolfContextBuilder {
             Err(LoadRootCertificateError::from(result))
         }
     }
+
+    /// Wraps [`wolfSSL_CTX_set_cipher_list`][0]
+    ///
+    /// [0]: https://www.wolfssl.com/documentation/manuals/wolfssl/ssl_8h.html#function-wolfssl_ctx_set_cipher_list
+    pub fn with_cipher_list(self, cipher_list: &str) -> Option<Self> {
+        let cipher_list = std::ffi::CString::new(cipher_list).ok()?;
+        let result = unsafe {
+            raw_bindings::wolfSSL_CTX_set_cipher_list(self.0, cipher_list.as_c_str().as_ptr())
+        };
+        if result == raw_bindings::WOLFSSL_SUCCESS {
+            Some(self)
+        } else {
+            None
+        }
+    }
 }
 
 #[cfg(test)]
@@ -209,6 +224,18 @@ mod tests {
         let _ = WolfContextBuilder::new(WolfMethod::TlsClient)
             .unwrap()
             .with_root_certificate(cert)
+            .unwrap();
+
+        wolf_cleanup().unwrap();
+    }
+
+    #[test]
+    fn wolf_context_set_cipher_list() {
+        let _ = WolfContextBuilder::new(WolfMethod::DtlsClient)
+            .unwrap()
+            // This string might need to change depending on the flags
+            // we built wolfssl with.
+            .with_cipher_list("TLS13-CHACHA20-POLY1305-SHA256")
             .unwrap();
 
         wolf_cleanup().unwrap();
