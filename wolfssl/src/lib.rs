@@ -77,6 +77,13 @@ pub enum RootCertificate<'a> {
     PemFileOrDirectory(&'a std::path::Path),
 }
 
+pub enum Secret<'a> {
+    Asn1Buffer(&'a [u8]),
+    Asn1File(&'a std::path::Path),
+    PemBuffer(&'a [u8]),
+    PemFile(&'a std::path::Path),
+}
+
 pub struct WolfContextBuilder(*mut raw_bindings::WOLFSSL_CTX);
 
 impl WolfContextBuilder {
@@ -171,6 +178,58 @@ impl WolfContextBuilder {
             None
         }
     }
+
+    /// Wraps [`wolfSSL_CTX_use_certificate_file`][0] and [`wolfSSL_CTX_use_certificate_buffer`][1]
+    ///
+    /// [0]: https://www.wolfssl.com/documentation/manuals/wolfssl/group__CertsKeys.html#function-wolfssl_ctx_use_certificate_file
+    /// [1]: https://www.wolfssl.com/documentation/manuals/wolfssl/group__CertsKeys.html#function-wolfssl_ctx_use_certificate_buffer
+    pub fn with_certificate(self, secret: Secret) -> Option<Self> {
+        use raw_bindings::{
+            wolfSSL_CTX_use_certificate_buffer, wolfSSL_CTX_use_certificate_file,
+            WOLFSSL_FILETYPE_ASN1, WOLFSSL_FILETYPE_PEM, WOLFSSL_SUCCESS,
+        };
+
+        let result = match secret {
+            Secret::Asn1Buffer(buf) => unsafe {
+                wolfSSL_CTX_use_certificate_buffer(
+                    self.0,
+                    buf.as_ptr(),
+                    buf.len() as i64,
+                    WOLFSSL_FILETYPE_ASN1,
+                )
+            },
+            Secret::Asn1File(path) => unsafe {
+                let file = std::ffi::CString::new(path.to_str()?).ok()?;
+                wolfSSL_CTX_use_certificate_file(
+                    self.0,
+                    file.as_c_str().as_ptr(),
+                    WOLFSSL_FILETYPE_ASN1,
+                )
+            },
+            Secret::PemBuffer(buf) => unsafe {
+                wolfSSL_CTX_use_certificate_buffer(
+                    self.0,
+                    buf.as_ptr(),
+                    buf.len() as i64,
+                    WOLFSSL_FILETYPE_PEM,
+                )
+            },
+            Secret::PemFile(path) => unsafe {
+                let file = std::ffi::CString::new(path.to_str()?).ok()?;
+                wolfSSL_CTX_use_certificate_file(
+                    self.0,
+                    file.as_c_str().as_ptr(),
+                    WOLFSSL_FILETYPE_PEM,
+                )
+            },
+        };
+
+        if result == WOLFSSL_SUCCESS {
+            Some(self)
+        } else {
+            None
+        }
+    }
 }
 
 #[cfg(test)]
@@ -236,6 +295,23 @@ mod tests {
             // This string might need to change depending on the flags
             // we built wolfssl with.
             .with_cipher_list("TLS13-CHACHA20-POLY1305-SHA256")
+            .unwrap();
+
+        wolf_cleanup().unwrap();
+    }
+
+    #[test]
+    fn wolf_context_set_certificate_buffer() {
+        const SERVER_CERT: &[u8] = &include!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/test_data/server_cert_der_2048"
+        ));
+
+        let cert = Secret::Asn1Buffer(SERVER_CERT);
+
+        let _ = WolfContextBuilder::new(WolfMethod::TlsClient)
+            .unwrap()
+            .with_certificate(cert)
             .unwrap();
 
         wolf_cleanup().unwrap();
