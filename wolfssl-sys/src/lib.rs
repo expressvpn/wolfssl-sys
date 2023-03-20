@@ -1,5 +1,5 @@
-mod bindings;
-pub use bindings::*;
+pub mod raw_bindings;
+pub use raw_bindings::*;
 
 /**
  * Add more tests to gain more confidence in the bindings
