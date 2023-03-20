@@ -298,6 +298,25 @@ impl WolfContextBuilder {
             None
         }
     }
+
+    pub fn build(self) -> WolfContext {
+        WolfContext(self.0)
+    }
+}
+
+pub struct WolfContext(*mut raw_bindings::WOLFSSL_CTX);
+
+impl WolfContext {
+    // TODO (pangt):
+}
+
+impl Drop for WolfContext {
+    /// Invokes [`wolfSSL_CTX_free`][0]
+    ///
+    /// [0]: https://www.wolfssl.com/documentation/manuals/wolfssl/group__Setup.html#function-wolfssl_ctx_free
+    fn drop(&mut self) {
+        unsafe { raw_bindings::wolfSSL_CTX_free(self.0) }
+    }
 }
 
 #[cfg(test)]
