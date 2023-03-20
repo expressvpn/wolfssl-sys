@@ -307,7 +307,17 @@ impl WolfContextBuilder {
 pub struct WolfContext(*mut raw_bindings::WOLFSSL_CTX);
 
 impl WolfContext {
-    // TODO (pangt):
+    /// Invokes [`wolfSSL_new`][0]
+    ///
+    /// [0]: https://www.wolfssl.com/documentation/manuals/wolfssl/group__Setup.html#function-wolfssl_new
+    pub fn new_session(&self) -> Option<WolfSession> {
+        let ptr = unsafe { raw_bindings::wolfSSL_new(self.0) };
+        if !ptr.is_null() {
+            Some(WolfSession(ptr))
+        } else {
+            None
+        }
+    }
 }
 
 impl Drop for WolfContext {
@@ -316,6 +326,34 @@ impl Drop for WolfContext {
     /// [0]: https://www.wolfssl.com/documentation/manuals/wolfssl/group__Setup.html#function-wolfssl_ctx_free
     fn drop(&mut self) {
         unsafe { raw_bindings::wolfSSL_CTX_free(self.0) }
+    }
+}
+
+pub struct WolfSession(*mut raw_bindings::WOLFSSL);
+
+impl WolfSession {
+    /// Gets the current cipher of the session.
+    /// If there is no cipher, returns `Some("NONE")`.
+    pub fn get_current_cipher_name(&self) -> Option<String> {
+        let cipher = unsafe { raw_bindings::wolfSSL_get_current_cipher(self.0) };
+        if !cipher.is_null() {
+            let name = unsafe {
+                let name = raw_bindings::wolfSSL_CIPHER_get_name(cipher);
+                std::ffi::CStr::from_ptr(name).to_str().ok()?.to_string()
+            };
+            Some(name)
+        } else {
+            None
+        }
+    }
+}
+
+impl Drop for WolfSession {
+    /// Invokes [`wolfSSL_free`][0]
+    ///
+    /// [0]: https://www.wolfssl.com/documentation/manuals/wolfssl/group__Setup.html#function-wolfssl_free
+    fn drop(&mut self) {
+        unsafe { raw_bindings::wolfSSL_free(self.0) }
     }
 }
 
