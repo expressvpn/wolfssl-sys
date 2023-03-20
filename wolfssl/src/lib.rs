@@ -1,18 +1,12 @@
-use wolfssl_sys::raw_bindings;
+mod errors;
 
-/// Return error values for [`wolf_init`]
-#[derive(Debug)]
-pub enum WolfInitError {
-    /// Corresponds with `BAD_MUTEX_E`
-    Mutex,
-    /// Corresponds with `WC_INIT_E`
-    WolfCrypt,
-}
+use crate::errors::{LoadRootCertificateError, WolfCleanupError, WolfInitError};
+use wolfssl_sys::raw_bindings;
 
 /// Wraps [`wolfSSL_Init`][0]
 ///
 /// Note that this is also internally during initialization by
-/// [`WolfSslContext`].
+/// [`WolfContextBuilder`].
 ///
 /// [0]: https://www.wolfssl.com/documentation/manuals/wolfssl/group__TLS.html#function-wolfssl_init
 pub fn wolf_init() -> Result<(), WolfInitError> {
@@ -22,13 +16,6 @@ pub fn wolf_init() -> Result<(), WolfInitError> {
         raw_bindings::WC_INIT_E => Err(WolfInitError::WolfCrypt),
         e => panic!("Unexpected return value from `wolfSSL_Init`. Got {e}"),
     }
-}
-
-/// Return error values for [`wolf_cleanup`]
-#[derive(Debug)]
-pub enum WolfCleanupError {
-    /// Corresponds with `BAD_MUTEX_E`
-    Mutex,
 }
 
 /// Wraps [`wolfSSL_Cleanup`][0]
@@ -84,6 +71,93 @@ impl WolfMethod {
     }
 }
 
+pub enum RootCertificate<'a> {
+    PemBuffer(&'a [u8]),
+    Asn1Buffer(&'a [u8]),
+    PemFileOrDirectory(&'a std::path::Path),
+}
+
+pub struct WolfContextBuilder(*mut raw_bindings::WOLFSSL_CTX);
+
+impl WolfContextBuilder {
+    /// Invokes [`wolfSSL_CTX_new`][0]
+    ///
+    /// [0]: https://www.wolfssl.com/documentation/manuals/wolfssl/group__Setup.html#function-wolfssl_ctx_new
+    pub fn new(method: WolfMethod) -> Option<Self> {
+        let method_fn = method.into_method_ptr()?;
+
+        let ctx = unsafe { raw_bindings::wolfSSL_CTX_new(method_fn) };
+
+        if !ctx.is_null() {
+            Some(Self(ctx))
+        } else {
+            None
+        }
+    }
+
+    /// Wraps [`wolfSSL_CTX_load_verify_buffer`][0] and [`wolfSSL_CTX_load_verify_locations`][1]
+    ///
+    /// [0]: https://www.wolfssl.com/documentation/manuals/wolfssl/group__CertsKeys.html#function-wolfssl_ctx_load_verify_buffer
+    /// [1]: https://www.wolfssl.com/documentation/manuals/wolfssl/group__CertsKeys.html#function-wolfssl_ctx_load_verify_locations
+    pub fn with_root_certificate(
+        self,
+        root: RootCertificate,
+    ) -> Result<Self, LoadRootCertificateError> {
+        use raw_bindings::{
+            wolfSSL_CTX_load_verify_buffer, wolfSSL_CTX_load_verify_locations,
+            WOLFSSL_FILETYPE_ASN1, WOLFSSL_FILETYPE_PEM, WOLFSSL_SUCCESS,
+        };
+
+        let result = match root {
+            RootCertificate::Asn1Buffer(buf) => unsafe {
+                wolfSSL_CTX_load_verify_buffer(
+                    self.0,
+                    buf.as_ptr(),
+                    buf.len() as i64,
+                    WOLFSSL_FILETYPE_ASN1,
+                )
+            },
+            RootCertificate::PemBuffer(buf) => unsafe {
+                wolfSSL_CTX_load_verify_buffer(
+                    self.0,
+                    buf.as_ptr(),
+                    buf.len() as i64,
+                    WOLFSSL_FILETYPE_PEM,
+                )
+            },
+            RootCertificate::PemFileOrDirectory(path) => {
+                let is_dir = path.is_dir();
+                let path =
+                    std::ffi::CString::new(path.to_str().ok_or(LoadRootCertificateError::Path)?)
+                        .map_err(|_| LoadRootCertificateError::Path)?;
+                if is_dir {
+                    unsafe {
+                        wolfSSL_CTX_load_verify_locations(
+                            self.0,
+                            std::ptr::null(),
+                            path.as_c_str().as_ptr(),
+                        )
+                    }
+                } else {
+                    unsafe {
+                        wolfSSL_CTX_load_verify_locations(
+                            self.0,
+                            path.as_c_str().as_ptr(),
+                            std::ptr::null(),
+                        )
+                    }
+                }
+            }
+        };
+
+        if result == WOLFSSL_SUCCESS {
+            Ok(self)
+        } else {
+            Err(LoadRootCertificateError::from(result))
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -114,6 +188,29 @@ mod tests {
     fn wolfssl_context_new(method: WolfMethod) {
         wolf_init().unwrap();
         let _ = method.into_method_ptr().unwrap();
+        wolf_cleanup().unwrap();
+    }
+
+    #[test]
+    fn wolf_context_new() {
+        WolfContextBuilder::new(WolfMethod::DtlsClient).unwrap();
+        wolf_cleanup().unwrap();
+    }
+
+    #[test]
+    fn wolf_context_root_certificate_buffer() {
+        const CA_CERT: &[u8] = &include!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/test_data/ca_cert_der_2048"
+        ));
+
+        let cert = RootCertificate::Asn1Buffer(CA_CERT);
+
+        let _ = WolfContextBuilder::new(WolfMethod::TlsClient)
+            .unwrap()
+            .with_root_certificate(cert)
+            .unwrap();
+
         wolf_cleanup().unwrap();
     }
 }
