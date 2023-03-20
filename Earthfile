@@ -8,12 +8,19 @@ build-deps:
     RUN apt-get install -qqy autoconf autotools-dev libtool-bin clang cmake
     RUN rustup component add rustfmt
 
+copy-wolfssl-sys:
+    FROM +build-deps
+    COPY --dir               \
+        wolfssl-sys/src      \
+        wolfssl-sys/vendor   \
+        wolfssl-sys/examples \
+        ./wolfssl-sys
+    COPY wolfssl-sys/Cargo.toml wolfssl-sys/wrapper.h wolfssl-sys/build.rs ./wolfssl-sys
+
 copy-src:
     FROM +build-deps
-    COPY Cargo.toml wrapper.h build.rs ./
-    COPY --dir src ./
-    COPY --dir vendor ./
-    COPY --dir examples ./
+    FROM +copy-wolfssl-sys
+    COPY Cargo.toml Cargo.lock ./
 
 build-dev:
     FROM +copy-src
