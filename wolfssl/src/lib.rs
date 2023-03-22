@@ -1,3 +1,4 @@
+pub mod async_client;
 mod errors;
 
 use crate::errors::{LoadRootCertificateError, WolfCleanupError, WolfInitError};

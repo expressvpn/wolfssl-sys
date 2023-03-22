@@ -9,7 +9,10 @@ repository = "https://github.com/expressvpn/wolfssl-sys"
 keywords = ["wolfssl", "vpn", "lightway", "post-quantum", "cryptography"]
 
 [dependencies]
+tokio = { version = "1.26.0", features = ["full"] }
 wolfssl-sys = { path = "../wolfssl-sys", features = ["postquantum"] }
+bytes = "1.4.0"
+parking_lot = "0.12.1"
 
 [dev-dependencies]
 test-case = "3.0"
