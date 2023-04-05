@@ -41,4 +41,5 @@ build-crate:
 lint:
     FROM +copy-src
     RUN rustup component add clippy
+    RUN apt-get install -qqy bsdextrautils
     RUN cargo clippy --all-features --all-targets -- -D warnings
