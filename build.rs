@@ -86,6 +86,10 @@ fn build_wolfssl(dest: &str) -> PathBuf {
         .cflag("-DWOLFSSL_MIN_RSA_BITS=2048")
         .cflag("-DWOLFSSL_MIN_ECC_BITS=256");
 
+    if cfg!(feature = "debug") {
+        conf.enable("debug", None);
+    }
+
     if cfg!(feature = "postquantum") {
         // Post Quantum support is provided by liboqs
         if let Some(include) = std::env::var_os("DEP_OQS_ROOT") {
@@ -165,9 +169,7 @@ fn main() -> std::io::Result<()> {
 
     let builder = builder.blocklist_function("wolfSSL_BIO_vprintf");
 
-    let bindings: bindgen::Bindings = builder
-        .generate()
-        .expect("Unable to generate bindings");
+    let bindings: bindgen::Bindings = builder.generate().expect("Unable to generate bindings");
 
     bindings.emit_warnings();
 
