@@ -20,6 +20,7 @@ oqs-sys = { version = "0.7.2", default-features = false, features = ["kems", "si
 
 [features]
 default = []
+debug = []
 postquantum = ["dep:oqs-sys"]
 
 
