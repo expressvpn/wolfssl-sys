@@ -6,6 +6,7 @@ WORKDIR /wolfssl-sys
 build-deps:
     RUN apt-get update -qqy
     RUN apt-get install -qqy autoconf autotools-dev libtool-bin clang cmake
+    RUN apt-get -y install --no-install-recommends bsdmainutils
     RUN rustup component add rustfmt
 
 copy-src:
