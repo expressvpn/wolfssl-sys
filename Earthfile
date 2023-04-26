@@ -4,8 +4,8 @@ FROM rust:1.67.1
 WORKDIR /wolfssl-sys
 
 build-deps:
-    RUN apt-get update -qqy
-    RUN apt-get install -qqy autoconf autotools-dev libtool-bin clang cmake
+    RUN apt-get update -qq
+    RUN apt-get install --no-install-recommends -qq autoconf autotools-dev libtool-bin clang cmake
     RUN apt-get -y install --no-install-recommends bsdmainutils
     RUN rustup component add rustfmt
 
