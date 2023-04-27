@@ -160,7 +160,7 @@ fn main() -> std::io::Result<()> {
         .header("wrapper.h")
         .clang_arg(format!("-I{dst_include}/"))
         .parse_callbacks(Box::new(ignored_macros))
-        .rustfmt_bindings(true);
+        .formatter(bindgen::Formatter::Rustfmt);
 
     let builder = builder
         .allowlist_file(format!("{dst_include}/wolfssl/.*.h"))
@@ -170,8 +170,6 @@ fn main() -> std::io::Result<()> {
     let builder = builder.blocklist_function("wolfSSL_BIO_vprintf");
 
     let bindings: bindgen::Bindings = builder.generate().expect("Unable to generate bindings");
-
-    bindings.emit_warnings();
 
     // Write out the bindings
     bindings
