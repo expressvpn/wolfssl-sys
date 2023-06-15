@@ -176,7 +176,7 @@ checksum = "b7e5500299e16ebb147ae15a00a942af264cf3688f47923b8fc2cd5858f23ad3"
 [[package]]
 name = "oqs-sys"
 version = "0.7.2"
-source = "git+https://github.com/open-quantum-safe/liboqs-rust#f7bd5038018f2d69c55b642fcc373ae445ac378a"
+source = "git+https://github.com/open-quantum-safe/liboqs-rust?rev=10c540350d86fa71110b325f4883f421cb326970#10c540350d86fa71110b325f4883f421cb326970"
 dependencies = [
  "bindgen",
  "build-deps",
