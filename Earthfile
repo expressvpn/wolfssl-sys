@@ -11,7 +11,7 @@ build-deps:
 
 copy-src:
     FROM +build-deps
-    COPY Cargo.toml wrapper.h build.rs ./
+    COPY Cargo.toml Cargo.lock wrapper.h build.rs ./
     COPY --dir src ./
     COPY --dir vendor ./
     COPY --dir examples ./
