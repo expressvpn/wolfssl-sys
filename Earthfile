@@ -1,5 +1,5 @@
-VERSION 0.6
-FROM rust:1.69
+VERSION 0.7
+FROM rust:1.71
 
 WORKDIR /wolfssl-sys
 
@@ -11,10 +11,8 @@ build-deps:
 
 copy-src:
     FROM +build-deps
-    COPY Cargo.toml wrapper.h build.rs ./
-    COPY --dir src ./
-    COPY --dir vendor ./
-    COPY --dir examples ./
+    COPY Cargo.toml Cargo.lock wrapper.h build.rs ./
+    COPY --dir src vendor examples ./
 
 build-dev:
     FROM +copy-src
