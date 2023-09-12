@@ -43,6 +43,11 @@ lint:
     RUN apt-get install -qqy bsdextrautils
     RUN cargo clippy --all-features --all-targets -- -D warnings
 
+fmt:
+    FROM +copy-src
+    RUN rustup component add rustfmt
+    RUN cargo fmt --check
+
 check-license:
     RUN cargo install --locked cargo-deny
     COPY --dir src tests Cargo.toml Cargo.lock deny.toml ./

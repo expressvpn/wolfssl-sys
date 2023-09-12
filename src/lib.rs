@@ -1,7 +1,6 @@
 mod bindings;
 pub use bindings::*;
 
-
 /**
  * Add more tests to gain more confidence in the bindings
  */
