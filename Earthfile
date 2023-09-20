@@ -12,7 +12,7 @@ build-deps:
 copy-src:
     FROM +build-deps
     COPY Cargo.toml Cargo.lock wrapper.h build.rs ./
-    COPY --dir src vendor examples ./
+    COPY --dir src wolfssl examples ./
 
 build-dev:
     FROM +copy-src
