@@ -14,9 +14,9 @@ Add `wolfssl-sys` to your Cargo manifest:
 
 ```
 [dependencies]
-wolfssl-sys = "0.1.15"
+wolfssl-sys = "0.1.16"
 ```
-To ensure that the crate can be built even offline, the crate includes the source code for WolfSSL (currently version `5.6.0`). WolfSSL uses autotools and automake to build and configure the library so this will need to be installed on the build system.
+To ensure that the crate can be built even offline, the crate includes the source code for WolfSSL (currently version `5.6.3`). WolfSSL uses autotools and automake to build and configure the library so this will need to be installed on the build system.
 
 Note: This crate includes a patch from the WolfSSL master branch to improve reporting with Post Quantum curves. It has no other effect and as it is already merged into master, will be removed when WolfSSL cuts a new release.
 
@@ -32,7 +32,7 @@ WolfSSL offers Post Quantum support by leveraging `liboqs`, a library from the [
 
 ``` toml
 [dependencies]
-wolfssl-sys = { version = "0.1.15" features = ["postquantum"] }
+wolfssl-sys = { version = "0.1.16" features = ["postquantum"] }
 ```
 
 This will automatically build `liboqs` from the `oqs-sys` crate and link WolfSSL against it, making definitions such as `WOLFSSL_P521_KYBER_LEVEL5` available.
@@ -64,3 +64,6 @@ A number of people have taken the time to contribute towards this crate. From op
 
 * Resolve the warnings in the auto generated tests
 * Add feature support to allow customisation of the WolfSSL build
+
+## History Rewrite
+The history of this repository was rewritten after release `0.1.15`. This was to address the issue of a rapidly growing repository due to the inclusion of the WolfSSL source code in the repository itself. The repository moved to a submodule for WolfSSL from release `0.1.16`. The changes were also documented in the PR that made this change [here](https://github.com/expressvpn/wolfssl-sys/pull/53)
