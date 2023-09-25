@@ -1,3 +1,5 @@
+:warning: **This repository is now archived**. Ongoing development will take place in the https://github.com/expressvpn/wolfssl-rs repository.
+
 # wolfssl-sys
 This crate provides auto-generated unsafe Rust bindings through [bindgen](https://github.com/rust-lang/rust-bindgen/), to C functions provided by the WolfSSL library. Currently the build options are hard coded to match what we use for Lightway, but will be updated soon to support features.
 
